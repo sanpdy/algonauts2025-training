@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-RESULTS_DIR = '/home/sankalp/algonauts2025/results/all_modalities_no_pca'
+RESULTS_DIR = '/home/sankalp/algonauts2025/results/audio_no_pca_stim6'
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 def preprocess_features_chunked(features, chunk_size=10000):
@@ -492,12 +492,12 @@ if __name__ == '__main__':
     excluded_samples_start = 5
     excluded_samples_end = 5
     hrf_delay = 3
-    stimulus_window = 4 
+    stimulus_window = 6
     val_ratio = 0.2
     random_seed = 42
 
     # 'visual', 'audio', 'language', or 'all'
-    modality = 'all'
+    modality = 'audio'
 
     # PCA params
     n_components = 250
@@ -627,7 +627,7 @@ if __name__ == '__main__':
         if features_s07_raw.shape[0] == 0:
             print(f"  No Season 7 features found for subject {subject}. Skipping.")
             continue
-            
+    
         print(f"  Raw Season 7 features shape: {features_s07_raw.shape}")
         
         features_s07_norm = trained_scaler.transform(features_s07_raw)
