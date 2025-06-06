@@ -4,6 +4,7 @@ import numpy as np
 import h5py
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+import tqdm
 
 def load_features(root_data_dir, modality):
     os.path.join(root_data_dir, 'algonauts_2025.competitors', 'stimuli', 'train_data', 'features')
@@ -120,33 +121,13 @@ def perform_pca(features, n_components=100):
     return features_pca
 
 def load_stimulus_features_friends_s7(root_data_dir):
-    """
-    Load the stimulus features of all modalities (visual + audio + language) 
-    for Friends season 7.
-
-    Parameters
-    ----------
-    root_data_dir : str or Path
-        Root data directory.
-
-    Returns
-    -------
-    features_friends_s7 : dict
-        Dictionary containing the stimulus features for Friends season 7.
-        Structure: {modality: {episode: features_array}}
-    """
     features_friends_s7 = {}
 
     modalities = ['visual', 'audio', 'language']
 
     for modality in modalities:
         features_friends_s7[modality] = {}
-        if modality == 'visual':
-            data_dir = os.path.join(root_data_dir, 
-                                    'algonauts_2025.competitors', 
-                                    'stimuli', 'train_data', 'features', 
-                                    'clip_vit_b32_w16.h5')
-        elif modality == 'audio':
+        if modality == 'audio':
             data_dir = os.path.join(root_data_dir, 
                                     'algonauts_2025.competitors', 
                                     'stimuli', 'train_data', 'features', 
@@ -182,24 +163,6 @@ def load_stimulus_features_friends_s7(root_data_dir):
 
 def align_features_and_fmri_samples_friends_s7(features_friends_s7,
     root_data_dir):
-    """
-    Align the stimulus feature with the fMRI response samples for Friends season
-    7 episodes, later used to predict the fMRI responses for challenge
-    submission.
-
-    Parameters
-    ----------
-    features_friends_s7 : dict
-        Dictionary containing the stimulus features for Friends season 7.
-    root_data_dir : str
-        Root data directory.
-
-    Returns
-    -------
-    aligned_features_friends_s7 : dict
-        Aligned stimulus features for each subject and Friends season 7 episode.
-
-    """
 
     ### Empty results dictionary ###
     aligned_features_friends_s7 = {}

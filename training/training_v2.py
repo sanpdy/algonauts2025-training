@@ -1,13 +1,15 @@
 from __future__ import print_function
 import os
+import zipfile
 import tqdm
 from sklearn.linear_model import RidgeCV
 from sklearn.pipeline import make_pipeline
 from pathlib import Path
 from load_embeddings import load_features, preprocess_features_dict, perform_pca, load_stimulus_features_friends_s7, align_features_and_fmri_samples_friends_s7
 from load_fmri import load_fmri, align_features_and_fmri_samples
-from load_models import load_baseline_encoding_models, train_encoding, compute_encoding_accuracy
+from load_models import load_baseline_encoding_model, train_encoding, compute_encoding_accuracy
 import numpy as np
+
 if __name__ == "__main__":
     root_data_dir = Path("/home/sankalp/algonauts2025/data")
     data_path = "/home/sankalp/algonauts2025/data/algonauts_2025.competitors/stimuli/train_data/features/whisper_w16.h5"
@@ -125,7 +127,7 @@ if __name__ == "__main__":
         print(f"  Episode: {episode_name} - Features shape: {example_episode_shape}")
         print("-" * 40)
         
-    baseline_models = 
+    baseline_models = load_baseline_encoding_model(root_data_dir)
     # Empty submission predictions dictionary
     submission_predictions = {}
 
@@ -145,3 +147,18 @@ if __name__ == "__main__":
 
             # Store formatted predictions in the nested dictionary
             submission_predictions[sub][epi] = fmri_pred
+
+    for subject, episodes_dict in submission_predictions.items():
+        print(f"Subject: {subject}")
+        print(f"  Number of episodes: {len(episodes_dict)}")
+        for episode, predictions in episodes_dict.items():
+            print(f"  Episode: {episode} - Prediction fMRI shape: {predictions.shape}")
+        print("-" * 40)
+    
+    save_dir = '/home/sankalp/algonauts2025/submissions'
+    output_file = save_dir + "fmri_predictions_friends_s7.npy"
+    np.save(output_file, submission_predictions)
+    zip_file = save_dir + "fmri_predictions_friends_s7.zip"
+    with zipfile.ZipFile(zip_file, 'w') as zipf:
+        zipf.write(output_file, os.path.basename(output_file))
+    print(f"Submission predictions saved to: {zip_file}")

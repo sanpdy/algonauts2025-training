@@ -40,29 +40,25 @@ def compute_encoding_accuracy(root_data_dir, fmri_val, fmri_val_pred, subject, m
     display.close()
     print(f"Encoding accuracy plot saved to: {output_file}")
 
-def load_baseline_encoding_models(root_data_dir):
+def load_baseline_encoding_model(root_data_dir):
     baseline_models = {}
+    weights_dir = "/home/sankalp/algonauts2025/models"
+    model_weights = np.load(weights_dir, allow_pickle=True).item()
 
-    ### Loop over subjects ###
-    subjects = [1, 2, 3, 5]
-    for s in subjects:
-        ### Load the trained encoding model weights ###
-        weights_dir = os.path.join(root_data_dir, 'trained_encoding_models',
-            'trained_encoding_model_sub-0'+str(s)+'_modality-all.npy')
-        model_weights = np.load(weights_dir, allow_pickle=True).item()
+    ### Initialize the Ridge regression and load the trained weights ###
+    model = RidgeCV()
+    model.coef_ = model_weights['coef_']
+    model.intercept_ = model_weights['intercept_']
+    model.n_features_in_ = model_weights['n_features_in_']
 
-        ### Initialize the Ridge regression and load the trained weights ###
-        model = Ridge()
-        model.coef_ = model_weights['coef_']
-        model.intercept_ = model_weights['intercept_']
-        model.n_features_in_ = model_weights['n_features_in_']
-
-        ### Store the pretrained encoding model into a dictionary ###
-        baseline_models['sub-0'+str(s)] = model
-        del model
+    ### Store the pretrained encoding model into a dictionary ###
+    baseline_models['sub-01'] = model
+    del model
 
     ### Output ###
     return baseline_models
+
+
 
 def train_encoding(features_train, fmri_train):
     #model = LinearRegression().fit(features_train, fmri_train)
