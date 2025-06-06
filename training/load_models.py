@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from sklearn.linear_model import Ridge, LinearRegression, RidgeCV
+from sklearn.linear_model import Ridge, LinearRegression, RidgeCV, MultiTaskLassoCV, ElasticNetCV
 import nibabel as nib
 from nilearn import plotting
 from nilearn.maskers import NiftiLabelsMasker
@@ -35,7 +35,7 @@ def compute_encoding_accuracy(root_data_dir, fmri_val, fmri_val_pred, subject, m
     )
     colorbar = display._cbar
     colorbar.set_label("Pearson's $r$", rotation=90, labelpad=12, fontsize=12)
-    output_file="/home/sankalp/algonauts2025/results/training_v2_ridgecv/encoding_accuracy_sub-0" + str(subject) + "_modality-" + modality + ".png"
+    output_file="/home/sankalp/algonauts2025/results/training_v2_lasso/encoding_accuracy_sub-0" + str(subject) + "_modality-" + modality + ".png"
     display.savefig(output_file, dpi=300)
     display.close()
     print(f"Encoding accuracy plot saved to: {output_file}")
@@ -65,8 +65,8 @@ def load_baseline_encoding_models(root_data_dir):
     return baseline_models
 
 def train_encoding(features_train, fmri_train):
-    ### Train the linear regression model ###
-    model = RidgeCV().fit(features_train, fmri_train)
-
-    ### Output ###
+    #model = LinearRegression().fit(features_train, fmri_train)
+    model = RidgeCV(cv=5).fit(features_train, fmri_train)
     return model
+
+
